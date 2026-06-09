@@ -24,6 +24,22 @@ function parseNumber(value) {
   return Number.isFinite(n) ? n : null;
 }
 
+// New helper functions requested
+function modulo(a, b) {
+  return a % b;
+}
+
+function power(base, exponent) {
+  return Math.pow(base, exponent);
+}
+
+function squareRoot(n) {
+  if (n < 0) {
+    throw new Error('Cannot take square root of a negative number');
+  }
+  return Math.sqrt(n);
+}
+
 function calculate(op, a, b) {
   switch (op) {
     case 'add':
@@ -41,6 +57,15 @@ function calculate(op, a, b) {
         throw new Error('Division by zero');
       }
       return a / b;
+    case 'mod':
+    case '%':
+      return modulo(a, b);
+    case 'pow':
+    case '^':
+      return power(a, b);
+    case 'sqrt':
+      // square root only uses the first operand (a)
+      return squareRoot(a);
     default:
       throw new Error(`Unsupported operation: ${op}`);
   }
@@ -51,31 +76,64 @@ module.exports = {
   showUsage,
   parseNumber,
   calculate,
+  modulo,
+  power,
+  squareRoot,
 };
 
 if (require.main === module) {
   const args = process.argv.slice(2);
-  if (args.length !== 3) {
+  const op = args[0];
+
+  // Allow sqrt to accept a single operand, others expect two
+  if (!op) {
     showUsage();
     process.exit(1);
   }
 
-  const [op, s1, s2] = args;
-  const n1 = parseNumber(s1);
-  const n2 = parseNumber(s2);
+  if (op === 'sqrt') {
+    if (args.length !== 2) {
+      showUsage();
+      process.exit(1);
+    }
+    const s1 = args[1];
+    const n1 = parseNumber(s1);
+    if (n1 === null) {
+      console.error('Error: operand must be a valid number.');
+      showUsage();
+      process.exit(1);
+    }
 
-  if (n1 === null || n2 === null) {
-    console.error('Error: operands must be valid numbers.');
-    showUsage();
-    process.exit(1);
-  }
+    try {
+      const result = calculate(op, n1);
+      console.log(result);
+    } catch (err) {
+      console.error('Error:', err.message);
+      process.exit(1);
+    }
+  } else {
+    if (args.length !== 3) {
+      showUsage();
+      process.exit(1);
+    }
 
-  try {
-    const result = calculate(op, n1, n2);
-    // Print result to stdout
-    console.log(result);
-  } catch (err) {
-    console.error('Error:', err.message);
-    process.exit(1);
+    const [op2, s1, s2] = args;
+    const n1 = parseNumber(s1);
+    const n2 = parseNumber(s2);
+
+    if (n1 === null || n2 === null) {
+      console.error('Error: operands must be valid numbers.');
+      showUsage();
+      process.exit(1);
+    }
+
+    try {
+      const result = calculate(op2, n1, n2);
+      // Print result to stdout
+      console.log(result);
+    } catch (err) {
+      console.error('Error:', err.message);
+      process.exit(1);
+    }
   }
 }
