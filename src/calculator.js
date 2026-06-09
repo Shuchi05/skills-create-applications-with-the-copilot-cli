@@ -46,28 +46,36 @@ function calculate(op, a, b) {
   }
 }
 
-// CLI entry
-const args = process.argv.slice(2);
-if (args.length !== 3) {
-  showUsage();
-  process.exit(1);
-}
+// Export functions for testing and only run CLI when invoked directly
+module.exports = {
+  showUsage,
+  parseNumber,
+  calculate,
+};
 
-const [op, s1, s2] = args;
-const n1 = parseNumber(s1);
-const n2 = parseNumber(s2);
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args.length !== 3) {
+    showUsage();
+    process.exit(1);
+  }
 
-if (n1 === null || n2 === null) {
-  console.error('Error: operands must be valid numbers.');
-  showUsage();
-  process.exit(1);
-}
+  const [op, s1, s2] = args;
+  const n1 = parseNumber(s1);
+  const n2 = parseNumber(s2);
 
-try {
-  const result = calculate(op, n1, n2);
-  // Print result to stdout
-  console.log(result);
-} catch (err) {
-  console.error('Error:', err.message);
-  process.exit(1);
+  if (n1 === null || n2 === null) {
+    console.error('Error: operands must be valid numbers.');
+    showUsage();
+    process.exit(1);
+  }
+
+  try {
+    const result = calculate(op, n1, n2);
+    // Print result to stdout
+    console.log(result);
+  } catch (err) {
+    console.error('Error:', err.message);
+    process.exit(1);
+  }
 }
