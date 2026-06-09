@@ -26,8 +26,26 @@ describe('calculator operations', () => {
     expect(() => calculate('/', 1, 0)).toThrow('Division by zero');
   });
 
+  test('modulo: 5 % 2 = 1', () => {
+    expect(calculate('mod', 5, 2)).toBe(1);
+    expect(calculate('%', 5, 2)).toBe(1);
+  });
+
+  test('power: 2 ^ 3 = 8', () => {
+    expect(calculate('pow', 2, 3)).toBe(8);
+    expect(calculate('^', 2, 3)).toBe(8);
+  });
+
+  test('square root: sqrt 16 = 4', () => {
+    expect(calculate('sqrt', 16)).toBe(4);
+  });
+
+  test('square root of negative throws', () => {
+    expect(() => calculate('sqrt', -9)).toThrow('Cannot take square root of a negative number');
+  });
+
   test('unsupported operation throws', () => {
-    expect(() => calculate('pow', 2, 3)).toThrow(/Unsupported operation/);
+    expect(() => calculate('unknown', 2, 3)).toThrow(/Unsupported operation/);
   });
 
   test('parseNumber valid and invalid', () => {
